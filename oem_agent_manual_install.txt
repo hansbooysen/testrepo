@@ -1,0 +1,162 @@
+https://taliphakanozturken.wordpress.com/2018/04/22/how-to-manually-install-oracle-oem-agent-13c/
+
+on oms:
+emcli login -username=sysman
+emcli sync
+emcli get_supported_platforms
+emcli get_agentimage -destination=/app/install/agentimage -platform="Linux x86-64"
+cp /app/install/agentimage/13.4.0.0.0_AgentCore_226.zip /ora_eis_nfs/sw_install/oem/agent/134
+
+on target
+mkdir -p /app/oemagent/install
+cd /app/oemagent/install
+cp /ora_eis_nfs/sw_install/oem/agent/134/13.4.0.0.0_AgentCore_226.zip .
+unzip 13.4.0.0.0_AgentCore_226.zip
+
+mkdir -p /app/oemagent/agent13cr4
+
+./agentDeploy.sh AGENT_BASE_DIR=/app/oemagent/agent13cr4 \
+-force \
+-ignorePrereqs \
+-invPtrLoc /etc/oraInst.loc \
+AGENT_PORT=3872 \
+EM_UPLOAD_PORT=4903 \
+OMS_HOST=sioraman01 \
+ORACLE_HOSTNAME=nldxdrrva01.mtn.co.za \
+AGENT_INSTANCE_HOME=/app/oemagent/agent13cr4/agent_inst \
+AGENT_REGISTRATION_PASSWORD=mtn_4dm1n \
+SCRATCHPATH=/tmp
+
+/app/oemagent/agent13cr4/agent_inst/bin/emctl secure agent
+
+Please run as root on server fldidqrva01, fldficrva01 and nldficrva01
+/app/oemagent/agent13cr4/agent_13.4.0.0.0/root.sh
+
+On oms promote targets.
+	Setup
+	Add Target
+	Auto Discovery Results
+
+Heartbeat Status                             : OMS is unreachable
+
+ping sioraman01.mtn.co.za
+
+2. $telnet <OMS HOSTNAME>.<DOMAINNAME> 4903
+
+wget https://sioraman01.mtn.co.za:4903/empbs/upload --no-check-certificate
+
+----------------------------------------------------------------------------------------------------
+https://www.markusdba.net/2021/04/10/upgrade-enterprise-manager-cloud-control-to-13-5/
+backup
+mkdir -p /oradata/oraoem_bu
+mkdir -p /oradata/oraoms_bu
+
+$OMS_HOME/bin/emctl exportconfig oms -sysman_pwd mtn_4dm1n -dir /oradata/oraoms_bu
+cd
+. ./myomsenv.sh
+$OMS_HOME/bin/emctl stop oms -all
+
+cd
+. ./mydbenv.sh
+stop database 
+cp -rp /oradata/oraoem/ /oradata/oraoem_bu/
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+start db
+start oms
+
+mkdir -p /oradata/oem_134_install
+cd /app/install/oem13_4
+chmod u+x em13400_linux64.bin
+./em13400_linux64.bin -J-Djava.io.tmpdir=/scratch/app/tmp
+/oradata/oem_134_install 
+
+Middleware home:  /app/oracle/Middleware/oms12_4
+
+/oradata/oem_134_install
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+./agentDeploy.sh AGENT_BASE_DIR=/app/oemagent/agent13cr4 \
+-force \
+-ignorePrereqs \
+-invPtrLoc /etc/oraInst.loc \
+AGENT_PORT=3872 \
+EM_UPLOAD_PORT=4903 \
+OMS_HOST=sioraman01 \
+ORACLE_HOSTNAME=nldxdrrpa03.mtn.co.za \
+AGENT_INSTANCE_HOME=/app/oemagent/agent13cr4/agent_inst \
+AGENT_REGISTRATION_PASSWORD=mtn_4dm1n \
+SCRATCHPATH=/tmp
+
+
+/app/oemagent/agent13cr4/agent_inst/bin/emctl secure agent
+
+Please run as root on servers fldpgmrva01 and kldpgmrvb01
+
+/app/oemagent/agent13cr4/agent_13.4.0.0.0/root.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+Please complete as root on server nldcmsrvb01
+
+/apps1/oemagent/agent13cr4/agent_13.4.0.0.0/root.sh
+mount /ora_eis_nfs  (already in /etc/fstab)
+
+
+/apps1/oemagent/agent13cr4/agent_inst/bin/emctl secure agent
+
+./agentDeploy.sh AGENT_BASE_DIR=/apps1/oemagent/agent13cr4 \
+-force \
+-ignorePrereqs \
+-invPtrLoc /etc/oraInst.loc \
+AGENT_PORT=3872 \
+EM_UPLOAD_PORT=4903 \
+OMS_HOST=sioraman01 \
+ORACLE_HOSTNAME=nldcmsrvb01.mtn.co.za \
+AGENT_INSTANCE_HOME=/apps1/oemagent/agent13cr4/agent_inst \
+AGENT_REGISTRATION_PASSWORD=mtn_4dm1n \
+SCRATCHPATH=/tmp
